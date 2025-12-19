@@ -1,0 +1,5 @@
+---
+# user-management tasks
+- name: Placeholder for user-management
+  ansible.builtin.debug:
+    msg: "user-management role placeholder"

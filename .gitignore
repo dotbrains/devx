@@ -1,0 +1,59 @@
+# Vagrant
+.vagrant/
+*.box
+*.log
+
+# Ansible
+*.retry
+.ansible/
+ansible.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Artifacts
+packages/base/artifacts/
+packages/organization/artifacts/
+packages/programs/*/artifacts/
+
+# Secrets
+secrets/
+*.vault
+vault-pass.txt
+
+# Build outputs
+build/
+dist/
+*.tar.gz
+*.zip
+
+# MkDocs
+docs/site/
+docs/venv/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Local overrides
+local.yml
+override.yml

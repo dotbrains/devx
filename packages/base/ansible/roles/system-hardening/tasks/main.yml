@@ -1,0 +1,65 @@
+---
+- name: Configure SELinux
+  ansible.posix.selinux:
+    state: "{{ base_selinux_state }}"
+    policy: targeted
+  when: ansible_os_family == "RedHat"
+
+- name: Configure firewall
+  ansible.builtin.systemd:
+    name: firewalld
+    state: "{{ 'started' if base_firewall_enabled else 'stopped' }}"
+    enabled: "{{ base_firewall_enabled }}"
+  when: ansible_os_family == "RedHat"
+
+- name: Harden SSH configuration
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    validate: /usr/sbin/sshd -t -f %s
+  loop:
+    - regexp: '^#?PasswordAuthentication'
+      line: "PasswordAuthentication {{ 'no' if not base_ssh_password_auth else 'yes' }}"
+    - regexp: '^#?PermitRootLogin'
+      line: "PermitRootLogin {{ 'no' if not base_ssh_root_login else 'yes' }}"
+    - regexp: '^#?X11Forwarding'
+      line: "X11Forwarding no"
+    - regexp: '^#?MaxAuthTries'
+      line: "MaxAuthTries 3"
+  notify: Restart sshd
+
+- name: Set proper permissions on sensitive files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0600'
+  loop:
+    - /etc/ssh/sshd_config
+    - /etc/shadow
+    - /etc/gshadow
+  failed_when: false
+
+- name: Disable unnecessary services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - bluetooth
+    - cups
+  failed_when: false
+
+- name: Configure kernel parameters for security
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: true
+    reload: true
+  loop:
+    - { key: 'kernel.dmesg_restrict', value: '1' }
+    - { key: 'kernel.kptr_restrict', value: '2' }
+    - { key: 'net.ipv4.conf.all.send_redirects', value: '0' }
+    - { key: 'net.ipv4.conf.default.send_redirects', value: '0' }
+    - { key: 'net.ipv4.conf.all.accept_redirects', value: '0' }
+    - { key: 'net.ipv4.conf.default.accept_redirects', value: '0' }

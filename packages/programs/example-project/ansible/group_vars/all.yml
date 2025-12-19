@@ -1,0 +1,113 @@
+---
+# Program-Specific Configuration Overrides
+# These values override organization and base layer defaults
+
+# Program Identity
+program_name: "example-project"
+program_description: "Example web application project"
+program_team: "platform-team"
+program_environment: "{{ environment | default('development') }}"
+
+# Override organization app versions
+app_nodejs_version: "20.10.0"  # Pin specific version for stability
+app_docker_version: "24.0.7"
+app_postgresql_version: "15"
+
+# Program-specific applications
+program_apps_to_install:
+  - name: postgresql
+    role: app-postgresql
+    enabled: true
+    config:
+      version: "15"
+      databases:
+        - name: "example_dev"
+          owner: "example_user"
+      extensions:
+        - pg_stat_statements
+        - pgcrypto
+
+  - name: redis
+    role: app-redis
+    enabled: true
+    config:
+      version: "7.2"
+      maxmemory: "256mb"
+      persistence: true
+
+  - name: nginx
+    role: app-nginx
+    enabled: true
+    config:
+      version: "1.24"
+      sites:
+        - name: "example-project"
+          port: 80
+          proxy_pass: "http://localhost:3000"
+
+  - name: nodejs
+    role: app-nodejs
+    enabled: true
+    config:
+      version: "20.10.0"
+      global_packages:
+        - pm2
+        - typescript
+        - eslint
+        - prettier
+
+# Program repository
+program_repo_url: "https://github.com/example/example-project.git"
+program_repo_branch: "main"
+program_clone_on_provision: true
+program_repo_destination: "/opt/{{ program_name }}"
+
+# Database configuration
+program_databases:
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "example_dev"
+    user: "example_user"
+    password: "dev_password"  # Use vault in production
+
+# CI/CD Integration
+program_ci_integration: "github-actions"
+program_ci_config:
+  webhook_url: ""
+  build_on_provision: false
+
+# Monitoring
+program_monitoring_enabled: true
+program_monitoring_endpoints:
+  - name: "app-health"
+    url: "http://localhost:3000/health"
+    interval: 60
+  - name: "database"
+    url: "postgresql://localhost:5432"
+    interval: 300
+
+# Environment variables
+program_env_vars:
+  NODE_ENV: "{{ program_environment }}"
+  DATABASE_URL: "postgresql://example_user:dev_password@localhost:5432/example_dev"
+  REDIS_URL: "redis://localhost:6379"
+  LOG_LEVEL: "debug"
+  PORT: "3000"
+
+# Development tools
+program_dev_tools:
+  hot_reload: true
+  debug_mode: true
+  source_maps: true
+
+# Security overrides
+program_firewall_ports:
+  - 3000  # Application
+  - 5432  # PostgreSQL
+  - 6379  # Redis
+
+# Performance tuning
+program_nodejs_max_memory: "2048"
+program_postgres_shared_buffers: "256MB"
+program_redis_maxmemory: "256mb"

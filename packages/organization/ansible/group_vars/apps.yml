@@ -1,0 +1,139 @@
+---
+# Organization App Store Configuration
+# Override these values to customize app installations
+
+org_app_store_enabled: true
+org_foss_enabled: true
+
+# Apps to install by default
+org_apps_to_install:
+  - name: git
+    role: app-git
+    enabled: true
+    config:
+      version: "latest"
+      global_config:
+        user.name: "Developer"
+        core.editor: "vim"
+        pull.rebase: "false"
+
+  - name: docker
+    role: app-docker
+    enabled: true
+    config:
+      version: "24.0"
+      compose: true
+      buildx: true
+      daemon_json:
+        log-driver: "json-file"
+        log-opts:
+          max-size: "10m"
+          max-file: "3"
+
+  - name: kubectl
+    role: app-kubectl
+    enabled: true
+    config:
+      version: "1.28"
+      krew_plugins:
+        - ctx
+        - ns
+
+  - name: k9s
+    role: app-k9s
+    enabled: true
+    config:
+      version: "latest"
+      skin: "default"  # UI theme
+      refresh_rate: 2  # seconds
+
+  - name: k3s
+    role: app-k3s
+    enabled: false  # Disabled by default, enable for local k8s clusters
+    config:
+      version: "latest"
+      server: true  # Run as server (control plane)
+      agent: false  # Run as agent (worker node)
+      write_kubeconfig_mode: "0644"
+      disable:
+        - traefik  # Disable default traefik ingress
+      extra_args:
+        - "--no-deploy=servicelb"  # Disable default service load balancer
+
+  - name: helm
+    role: app-helm
+    enabled: true
+    config:
+      version: "3.13"
+      repos:
+        - name: stable
+          url: "https://charts.helm.sh/stable"
+        - name: bitnami
+          url: "https://charts.bitnami.com/bitnami"
+
+  - name: containerd
+    role: app-containerd
+    enabled: true
+    config:
+      version: "1.7"
+      enable_cri: true  # Enable CRI plugin for Kubernetes
+      config_path: "/etc/containerd/config.toml"
+      # ctr CLI tool included with containerd
+
+  - name: kind
+    role: app-kind
+    enabled: false  # Kubernetes in Docker, disabled by default
+    config:
+      version: "latest"
+      cluster_config:
+        name: "dev-cluster"
+        nodes: 1
+
+  - name: python
+    role: app-python
+    enabled: true
+    config:
+      version: "3.11"
+      pip_packages:
+        - pytest
+        - black
+        - pylint
+        - requests
+      virtualenv_wrapper: true
+
+  - name: nodejs
+    role: app-nodejs
+    enabled: true
+    config:
+      version: "20"
+      npm_packages:
+        - yarn
+        - typescript
+        - eslint
+
+  - name: vscode
+    role: app-vscode
+    enabled: false  # Disabled by default, enable per-user
+    config:
+      version: "1.85"
+      extensions:
+        - ms-python.python
+        - golang.go
+        - redhat.vscode-yaml
+
+  - name: trivy
+    role: app-trivy
+    enabled: true
+    config:
+      version: "latest"
+      auto_update_db: true
+
+# App-specific configurations can be overridden
+app_docker_rootless: false
+app_python_compile_optimizations: true
+app_nodejs_enable_corepack: true
+
+# FOSS Package Repository
+org_foss_repository_url: ""  # Set to internal mirror URL if available
+org_foss_security_scanning: true
+org_foss_auto_updates: false

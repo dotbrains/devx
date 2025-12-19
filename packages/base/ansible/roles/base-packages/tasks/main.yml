@@ -1,0 +1,5 @@
+---
+# base-packages tasks
+- name: Placeholder for base-packages
+  ansible.builtin.debug:
+    msg: "base-packages role placeholder"

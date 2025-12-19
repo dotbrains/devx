@@ -1,0 +1,75 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Use the organization's standard spin as base
+  # This inherits all base and organization configurations
+  config.vm.box = "devenv/standard-spin"
+  config.vm.box_url = "../../organization/spins/standard/package/standard-spin.box"
+  config.vm.hostname = "example-project-dev"
+
+  # VM Configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "example-project-dev"
+    vb.memory = "8192"
+    vb.cpus = 4
+    vb.gui = false
+  end
+
+  # Network Configuration
+  config.vm.network "private_network", ip: "192.168.56.10"
+  
+  # Project-specific port forwards
+  config.vm.network "forwarded_port", guest: 3000, host: 3000  # App server
+  config.vm.network "forwarded_port", guest: 5432, host: 5432  # PostgreSQL
+  config.vm.network "forwarded_port", guest: 6379, host: 6379  # Redis
+
+  # Synced Folders
+  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder "../../../", "/workspace"
+
+  # Program-specific provisioning
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "ansible/playbooks/program-setup.yml"
+    ansible.config_file = "ansible/ansible.cfg"
+    ansible.verbose = false
+    ansible.extra_vars = {
+      program_layer: true,
+      program_name: "example-project",
+      environment: ENV['ENV'] || "development"
+    }
+  end
+
+  # Custom shell provisioning for project-specific setup
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "Setting up example-project environment..."
+    
+    # Clone repository if not exists
+    if [ ! -d "/opt/example-project" ]; then
+      git clone https://github.com/example/example-project.git /opt/example-project
+    fi
+    
+    # Setup project dependencies
+    cd /opt/example-project
+    npm install
+    
+    echo "Example project environment ready!"
+  SHELL
+
+  # Post-provisioning message
+  config.vm.post_up_message = <<-MSG
+    Example Project Development Environment is ready!
+    
+    SSH: vagrant ssh
+    
+    Services:
+      - App: http://localhost:3000
+      - PostgreSQL: localhost:5432
+      - Redis: localhost:6379
+    
+    Quick start:
+      vagrant ssh
+      cd /opt/example-project
+      npm run dev
+  MSG
+end

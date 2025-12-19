@@ -1,0 +1,5 @@
+---
+# organization-security tasks
+- name: Placeholder for organization-security
+  ansible.builtin.debug:
+    msg: "organization-security role placeholder"

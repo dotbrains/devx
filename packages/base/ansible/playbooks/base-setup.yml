@@ -1,0 +1,59 @@
+---
+- name: Base System Setup and Hardening
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - ../group_vars/all.yml
+
+  vars:
+    ansible_roles_path:
+      - "{{ playbook_dir }}/../roles"
+
+  pre_tasks:
+    - name: Update package cache
+      ansible.builtin.package:
+        update_cache: true
+      tags: always
+
+  roles:
+    - role: system-hardening
+      tags: security
+    - role: base-packages
+      tags: packages
+    - role: network-config
+      tags: network
+    - role: user-management
+      tags: users
+    - role: monitoring
+      tags: monitoring
+      when: base_monitoring_enabled | default(true)
+
+  post_tasks:
+    - name: Clean package cache
+      ansible.builtin.dnf:
+        autoremove: true
+      when: ansible_pkg_mgr == "dnf"
+      tags: cleanup
+
+    - name: Clean DNF cache
+      ansible.builtin.command:
+        cmd: dnf clean all
+      when: ansible_pkg_mgr == "dnf"
+      changed_when: true
+      tags: cleanup
+
+    - name: Ensure dev-env directory exists
+      ansible.builtin.file:
+        path: /etc/dev-env
+        state: directory
+        mode: '0755'
+      tags: always
+
+    - name: Set base layer marker
+      ansible.builtin.file:
+        path: /etc/dev-env/base-layer
+        state: touch
+        mode: '0644'
+      tags: always

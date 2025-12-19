@@ -1,0 +1,5 @@
+---
+# foss-repository tasks
+- name: Placeholder for foss-repository
+  ansible.builtin.debug:
+    msg: "foss-repository role placeholder"

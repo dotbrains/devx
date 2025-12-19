@@ -1,0 +1,98 @@
+---
+- name: Program-Specific Setup
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - ../group_vars/all.yml
+
+  pre_tasks:
+    - name: Verify organization layer exists
+      ansible.builtin.stat:
+        path: /etc/dev-env/organization-layer
+      register: org_layer_check
+      failed_when: not org_layer_check.stat.exists
+
+    - name: Create program directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /opt/{{ program_name }}
+        - /etc/dev-env/programs/{{ program_name }}
+        - /var/log/{{ program_name }}
+
+  tasks:
+    - name: Install program-specific apps
+      ansible.builtin.include_role:
+        name: "{{ item.role }}"
+      loop: "{{ program_apps_to_install }}"
+      when:
+        - program_apps_to_install is defined
+        - item.enabled | default(true)
+      tags: apps
+
+    - name: Configure program environment
+      ansible.builtin.copy:
+        content: |
+          # Program environment configuration
+          export PROGRAM_NAME={{ program_name }}
+        dest: /etc/profile.d/{{ program_name }}.sh
+        mode: '0644'
+      tags: config
+
+    - name: Setup program databases
+      ansible.builtin.include_tasks: ../tasks/setup-databases.yml
+      when: program_databases is defined
+      tags: databases
+
+    - name: Configure CI/CD integration
+      ansible.builtin.include_tasks: ../tasks/setup-ci.yml
+      when: program_ci_integration is defined
+      tags: ci
+
+    - name: Install program dependencies
+      ansible.builtin.include_tasks: ../tasks/install-dependencies.yml
+      tags: dependencies
+
+    - name: Configure monitoring for program
+      ansible.builtin.copy:
+        content: |
+          ---
+          program: {{ program_name }}
+          monitoring_enabled: {{ program_monitoring_enabled | default(false) }}
+        dest: /etc/dev-env/programs/{{ program_name }}/monitoring.yml
+        mode: '0644'
+      when: program_monitoring_enabled | default(false)
+      tags: monitoring
+
+  post_tasks:
+    - name: Generate program configuration summary
+      ansible.builtin.copy:
+        content: |
+          {
+            "program": "{{ program_name }}",
+            "environment": "{{ environment }}"
+          }
+        dest: /etc/dev-env/programs/{{ program_name }}/config.json
+        mode: '0644'
+
+    - name: Set program layer marker
+      ansible.builtin.copy:
+        content: |
+          program: {{ program_name }}
+          environment: {{ environment }}
+          provisioned: {{ ansible_date_time.iso8601 }}
+        dest: /etc/dev-env/program-layer
+        mode: '0644'
+      tags: always
+
+    - name: Display program info
+      ansible.builtin.debug:
+        msg:
+          - "Program: {{ program_name }}"
+          - "Environment: {{ environment }}"
+          - "Apps installed: {{ program_apps_to_install | map(attribute='name') | list | default([]) }}"
+      tags: always

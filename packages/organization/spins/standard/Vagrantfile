@@ -1,0 +1,64 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Use the organization's base box
+  # This should be built from packages/base/images/rocky10
+  config.vm.box = "devenv/base-rocky10"
+  config.vm.box_url = "../../../base/artifacts/base-rocky10.box"
+  config.vm.hostname = "standard-devenv"
+
+  # VM Configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "standard-devenv"
+    vb.memory = "8192"
+    vb.cpus = 4
+    vb.gui = false
+    
+    # Performance optimizations
+    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
+
+  config.vm.provider "parallels" do |prl|
+    prl.name = "standard-devenv"
+    prl.memory = 8192
+    prl.cpus = 4
+  end
+
+  # Network Configuration
+  config.vm.network "private_network", type: "dhcp"
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
+  config.vm.network "forwarded_port", guest: 3000, host: 3000, auto_correct: true
+
+  # Synced Folders
+  # Parallels uses prl_fs which doesn't support dmode/fmode options
+  config.vm.synced_folder "../../../../", "/workspace",
+    mount_options: ENV['VAGRANT_DEFAULT_PROVIDER'] == 'parallels' ? [] : ["dmode=775,fmode=664"]
+
+  # Ansible Provisioning - Organization Layer
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "../../ansible/playbooks/organization-setup.yml"
+    ansible.config_file = "../../ansible/ansible.cfg"
+    ansible.inventory_path = "../../ansible/inventory/organization.ini"
+    ansible.verbose = false
+    ansible.extra_vars = {
+      organization_layer: true,
+      spin_type: "standard",
+      app_store_enabled: true
+    }
+  end
+
+  # Post-provisioning message
+  config.vm.post_up_message = <<-MSG
+    Standard Developer Environment is ready!
+    
+    SSH: vagrant ssh
+    
+    Installed apps can be managed via app-store CLI:
+      app-store list
+      app-store install <app-name>
+      app-store remove <app-name>
+      app-store update <app-name>
+  MSG
+end

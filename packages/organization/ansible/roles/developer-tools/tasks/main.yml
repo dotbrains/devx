@@ -1,0 +1,5 @@
+---
+# developer-tools tasks
+- name: Placeholder for developer-tools
+  ansible.builtin.debug:
+    msg: "developer-tools role placeholder"

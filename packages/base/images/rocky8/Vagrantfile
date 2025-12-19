@@ -1,0 +1,59 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# NOTE: Rocky Linux 8 does not have an ARM64 Vagrant box available.
+# This image is NOT supported on Apple Silicon Macs with Parallels.
+# Use Rocky Linux 9 or 10 instead for Apple Silicon compatibility.
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/rockylinux-8"
+  config.vm.hostname = "base-rocky8"
+
+  # VM Configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "base-rocky8"
+    vb.memory = "2048"
+    vb.cpus = 2
+    vb.gui = false
+  end
+
+  config.vm.provider "libvirt" do |lv|
+    lv.memory = "2048"
+    lv.cpus = 2
+    lv.driver = "qemu"
+  end
+
+  config.vm.provider "parallels" do |prl|
+    prl.name = "base-rocky8"
+    prl.memory = "2048"
+    prl.cpus = 2
+    prl.update_guest_tools = true
+  end
+
+  # Network Configuration
+  config.vm.network "private_network", type: "dhcp"
+
+  # Synced Folders
+  config.vm.synced_folder ".", "/vagrant", disabled: false
+
+  # Ansible Provisioning
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "../../ansible/playbooks/base-setup.yml"
+    ansible.config_file = "../../ansible/ansible.cfg"
+    ansible.inventory_path = "../../ansible/inventory/base.ini"
+    ansible.verbose = false
+    ansible.extra_vars = {
+      base_layer: true,
+      security_hardening: true,
+      minimal_install: true
+    }
+  end
+
+  # Post-provisioning message
+  config.vm.post_up_message = <<-MSG
+    Base Rocky Linux 8 environment is ready!
+    
+    SSH: vagrant ssh
+    Package: vagrant package --output base-rocky8.box
+  MSG
+end

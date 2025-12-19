@@ -1,0 +1,13 @@
+---
+profile: production
+
+exclude_paths:
+  - .git/
+  - .vagrant/
+  - artifacts/
+
+enable_list:
+  - fqcn-builtins
+  - no-log-password
+
+offline: false

@@ -1,0 +1,5 @@
+---
+# network-config tasks
+- name: Placeholder for network-config
+  ansible.builtin.debug:
+    msg: "network-config role placeholder"

@@ -1,0 +1,67 @@
+---
+- name: Organization Layer Setup
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - ../group_vars/all.yml
+    - ../group_vars/apps.yml
+
+  vars:
+    ansible_roles_path:
+      - "{{ playbook_dir }}/../roles"
+
+  pre_tasks:
+    - name: Verify base layer exists
+      ansible.builtin.stat:
+        path: /etc/dev-env/base-layer
+      register: base_layer_check
+      failed_when: not base_layer_check.stat.exists
+
+    - name: Create organization directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /opt/app-store
+        - /opt/foss-packages
+        - /etc/dev-env/organization
+
+  roles:
+    - role: app-store-setup
+      tags: app-store
+    - role: foss-repository
+      tags: foss
+      when: org_foss_enabled | default(true)
+    - role: developer-tools
+      tags: dev-tools
+    - role: organization-security
+      tags: security
+    - role: organization-monitoring
+      tags: monitoring
+
+  tasks:
+    - name: Install selected apps from app store
+      ansible.builtin.include_role:
+        name: "{{ item.role }}"
+      loop: "{{ org_apps_to_install }}"
+      when:
+        - org_apps_to_install is defined
+        - item.enabled | default(true)
+      tags: apps
+
+  post_tasks:
+    - name: Set organization layer marker
+      ansible.builtin.file:
+        path: /etc/dev-env/organization-layer
+        state: touch
+        mode: '0644'
+      tags: always
+
+    - name: Display installed apps
+      ansible.builtin.debug:
+        msg: "Installed apps: {{ org_apps_to_install | map(attribute='name') | list }}"
+      when: org_apps_to_install is defined
+      tags: always

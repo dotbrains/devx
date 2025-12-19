@@ -1,0 +1,5 @@
+---
+# App store setup tasks
+- name: Placeholder for app store setup
+  ansible.builtin.debug:
+    msg: "App store setup role placeholder"

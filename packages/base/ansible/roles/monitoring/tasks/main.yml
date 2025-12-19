@@ -1,0 +1,5 @@
+---
+# monitoring tasks
+- name: Placeholder for monitoring
+  ansible.builtin.debug:
+    msg: "monitoring role placeholder"

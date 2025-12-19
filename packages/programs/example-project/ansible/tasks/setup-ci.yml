@@ -1,0 +1,5 @@
+---
+# Setup CI/CD integration
+- name: Placeholder for CI/CD setup
+  ansible.builtin.debug:
+    msg: "CI/CD setup task placeholder"

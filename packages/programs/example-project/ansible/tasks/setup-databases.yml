@@ -1,0 +1,5 @@
+---
+# Setup program databases
+- name: Placeholder for database setup
+  ansible.builtin.debug:
+    msg: "Database setup task placeholder"

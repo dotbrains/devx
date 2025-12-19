@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  foss-api:
+    build:
+      context: ..
+      dockerfile: api/Dockerfile
+    container_name: foss-api
+    ports:
+      - "8000:8000"
+    environment:
+      - FOSS_API_HOST=0.0.0.0
+      - FOSS_API_PORT=8000
+      - FOSS_API_RELOAD=true
+      - FOSS_SCAN_ON_SUBMIT=true
+      - FOSS_CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+    volumes:
+      - ../registry:/app/registry
+      - ../security:/app/security
+      - ../licenses:/app/licenses
+      - ../scripts:/app/scripts
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

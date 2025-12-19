@@ -1,0 +1,104 @@
+site_name: DevX
+site_description: A modular, layered framework for building secure developer environments
+site_author: Nicholas Adamou
+site_url: https://dotbrains.github.io/devx/
+repo_url: https://github.com/dotbrains/devx
+repo_name: dotbrains/devx
+docs_dir: source
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started.md
+      - Quick Start: quick-start.md
+      - Common Tasks: common-tasks.md
+      - Utility Scripts: utility-scripts.md
+  - Architecture:
+      - Overview: architecture.md
+      - Base Layer: architecture/base-layer.md
+      - Organization Layer: architecture/org-layer.md
+      - Program Layer: architecture/program-layer.md
+  - User Guide:
+      - App Store: app-store.md
+      - FOSS Packages: foss-packages.md
+      - Configuration: configuration.md
+      - Authentication: authentication.md
+  - Administrator Guide:
+      - Building Base Images: admin/building-base-images.md
+      - App Store Management: admin/app-store-management.md
+      - FOSS Package Management: admin/foss-packages.md
+      - Security Configuration: admin/security-config.md
+  - Developer Guide:
+      - Creating Programs: creating-programs.md
+      - Custom Spins: dev/custom-spins.md
+      - Ansible Roles: dev/ansible-roles.md
+      - Program Configuration: dev/program-config.md
+  - API Reference:
+      - Overview: api-reference.md
+      - REST API: api/rest-api.md
+      - CLI Tool: api/cli-tool.md
+  - Troubleshooting:
+      - Common Issues: troubleshooting.md
+      - FAQ: faq.md
+  - Contributing: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/dotbrains/devx

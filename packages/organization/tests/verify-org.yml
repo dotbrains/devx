@@ -1,0 +1,67 @@
+---
+- name: Verify Organization Layer Configuration
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+      failed_when: docker_version.rc != 0
+      when: apps.docker.enabled | default(false)
+
+    - name: Check if kubectl is installed
+      ansible.builtin.command: kubectl version --client
+      register: kubectl_version
+      changed_when: false
+      failed_when: kubectl_version.rc != 0
+      when: apps.kubectl.enabled | default(false)
+
+    - name: Check if Python is installed
+      ansible.builtin.command: python3 --version
+      register: python_version
+      changed_when: false
+      failed_when: python_version.rc != 0
+      when: apps.python.enabled | default(false)
+
+    - name: Check if Node.js is installed
+      ansible.builtin.command: node --version
+      register: node_version
+      changed_when: false
+      failed_when: node_version.rc != 0
+      when: apps.nodejs.enabled | default(false)
+
+    - name: Verify FOSS package registry exists
+      ansible.builtin.stat:
+        path: /opt/foss-packages/registry/packages.yml
+      register: foss_registry
+
+    - name: Fail if FOSS registry doesn't exist
+      ansible.builtin.fail:
+        msg: "FOSS package registry not found"
+      when: not foss_registry.stat.exists
+
+    - name: Check FOSS API service
+      ansible.builtin.uri:
+        url: http://localhost:8000/api/v1/packages
+        method: GET
+        status_code: [200, 404]
+      register: api_check
+      failed_when: false
+
+    - name: Verify app store catalog
+      ansible.builtin.stat:
+        path: /opt/app-store/catalog.yml
+      register: app_catalog
+
+    - name: Display verification results
+      ansible.builtin.debug:
+        msg:
+          - "Docker: {{ 'OK' if docker_version.rc == 0 else 'Not installed' }}"
+          - "Kubectl: {{ 'OK' if kubectl_version.rc == 0 else 'Not installed' }}"
+          - "Python: {{ 'OK' if python_version.rc == 0 else 'Not installed' }}"
+          - "Node.js: {{ 'OK' if node_version.rc == 0 else 'Not installed' }}"
+          - "FOSS Registry: {{ 'OK' if foss_registry.stat.exists else 'Missing' }}"
+          - "App Catalog: {{ 'OK' if app_catalog.stat.exists else 'Missing' }}"

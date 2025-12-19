@@ -1,0 +1,240 @@
+---
+# Approved Open Source Licenses
+# Packages with these licenses are pre-approved for use
+
+approved_licenses:
+  # Permissive Licenses
+  - name: "MIT"
+    spdx_id: "MIT"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Very permissive, minimal restrictions"
+
+  - name: "Apache License 2.0"
+    spdx_id: "Apache-2.0"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: true
+    notes: "Permissive with patent grant protection"
+
+  - name: "BSD 2-Clause"
+    spdx_id: "BSD-2-Clause"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Simplified BSD license"
+
+  - name: "BSD 3-Clause"
+    spdx_id: "BSD-3-Clause"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Modified BSD license with non-endorsement clause"
+
+  - name: "ISC"
+    spdx_id: "ISC"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Functionally equivalent to MIT"
+
+  - name: "Python License 2.0"
+    spdx_id: "Python-2.0"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Python Software Foundation License"
+
+  - name: "PostgreSQL License"
+    spdx_id: "PostgreSQL"
+    category: "permissive"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Similar to MIT/BSD"
+
+  - name: "Unlicense"
+    spdx_id: "Unlicense"
+    category: "public-domain"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Public domain dedication"
+
+  - name: "CC0 1.0"
+    spdx_id: "CC0-1.0"
+    category: "public-domain"
+    risk_level: "low"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Creative Commons public domain dedication"
+
+  # Weak Copyleft Licenses
+  - name: "Mozilla Public License 2.0"
+    spdx_id: "MPL-2.0"
+    category: "weak-copyleft"
+    risk_level: "medium"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: true
+    notes: "File-level copyleft, compatible with proprietary code"
+
+  - name: "Eclipse Public License 2.0"
+    spdx_id: "EPL-2.0"
+    category: "weak-copyleft"
+    risk_level: "medium"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: true
+    notes: "Module-level copyleft"
+
+  - name: "LGPL 2.1"
+    spdx_id: "LGPL-2.1-only"
+    category: "weak-copyleft"
+    risk_level: "medium"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: false
+    notes: "Library GPL, allows linking with proprietary code"
+
+  - name: "LGPL 3.0"
+    spdx_id: "LGPL-3.0-only"
+    category: "weak-copyleft"
+    risk_level: "medium"
+    commercial_use: true
+    modification: true
+    distribution: true
+    patent_grant: true
+    notes: "Library GPL v3 with patent provisions"
+
+# Licenses Requiring Case-by-Case Review
+conditional_licenses:
+  - name: "GPL 2.0"
+    spdx_id: "GPL-2.0-only"
+    category: "strong-copyleft"
+    risk_level: "high"
+    requires_review: true
+    notes: "Strong copyleft - requires legal review for each use case"
+
+  - name: "GPL 3.0"
+    spdx_id: "GPL-3.0-only"
+    category: "strong-copyleft"
+    risk_level: "high"
+    requires_review: true
+    notes: "Strong copyleft with anti-tivoization provisions"
+
+  - name: "AGPL 3.0"
+    spdx_id: "AGPL-3.0-only"
+    category: "network-copyleft"
+    risk_level: "high"
+    requires_review: true
+    notes: "Network copyleft - triggers on network use"
+
+  - name: "SSPL"
+    spdx_id: "SSPL-1.0"
+    category: "source-available"
+    risk_level: "high"
+    requires_review: true
+    notes: "Server Side Public License - not OSI approved"
+
+# Prohibited Licenses
+prohibited_licenses:
+  - name: "Commons Clause"
+    category: "non-commercial"
+    reason: "Restricts commercial use"
+
+  - name: "WTFPL"
+    spdx_id: "WTFPL"
+    category: "profane"
+    reason: "Unprofessional license text"
+
+  - name: "JSON License"
+    category: "non-standard"
+    reason: "Contains 'Good, not Evil' restriction"
+
+  - name: "Proprietary"
+    category: "proprietary"
+    reason: "Not open source"
+
+# License Compatibility Matrix
+compatibility:
+  MIT:
+    compatible_with:
+      - Apache-2.0
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - ISC
+      - GPL-2.0-only
+      - GPL-3.0-only
+      - LGPL-2.1-only
+      - LGPL-3.0-only
+      - MPL-2.0
+
+  Apache-2.0:
+    compatible_with:
+      - MIT
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - GPL-3.0-only
+      - LGPL-3.0-only
+      - MPL-2.0
+    incompatible_with:
+      - GPL-2.0-only  # Patent clause incompatibility
+
+  GPL-3.0-only:
+    compatible_with:
+      - MIT
+      - Apache-2.0
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - LGPL-3.0-only
+    incompatible_with:
+      - Apache-2.0  # When used in GPL project
+      - Proprietary
+
+# Exception Process
+exception_process:
+  description: "Process for requesting license exceptions"
+  steps:
+    - "Submit exception request via JIRA ticket"
+    - "Provide business justification"
+    - "Legal team review"
+    - "Security team review"
+    - "Management approval required"
+    - "Document in exceptions registry"
+  
+  required_information:
+    - "Package name and version"
+    - "License type"
+    - "Use case description"
+    - "Risk assessment"
+    - "Alternatives considered"
+    - "Business impact"

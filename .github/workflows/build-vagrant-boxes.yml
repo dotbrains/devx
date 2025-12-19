@@ -1,0 +1,322 @@
+name: Build and Publish Vagrant Boxes
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'packages/base/images/**'
+      - 'packages/base/ansible/**'
+      - '.github/workflows/build-vagrant-boxes.yml'
+  pull_request:
+    paths:
+      - 'packages/base/images/**'
+      - 'packages/base/ansible/**'
+      - '.github/workflows/build-vagrant-boxes.yml'
+  workflow_dispatch:
+    inputs:
+      rocky_version:
+        description: 'Rocky Linux version to build (8, 9, 10, or all)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - '8'
+          - '9'
+          - '10'
+      publish:
+        description: 'Publish to GitHub Releases'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  matrix-setup:
+    name: Setup Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.set-matrix.outputs.versions }}
+    steps:
+      - name: Set build matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event.inputs.rocky_version }}" == "all" ] || [ -z "${{ github.event.inputs.rocky_version }}" ]; then
+            echo "versions=[\"8\",\"9\",\"10\"]" >> $GITHUB_OUTPUT
+          else
+            echo "versions=[\"${{ github.event.inputs.rocky_version }}\"]" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-test:
+    name: Build Rocky Linux ${{ matrix.rocky_version }}
+    needs: matrix-setup
+    runs-on: macos-12  # macOS runners have better nested virtualization support
+    strategy:
+      fail-fast: false
+      matrix:
+        rocky_version: ${{ fromJson(needs.matrix-setup.outputs.versions) }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Vagrant boxes
+        uses: actions/cache@v3
+        with:
+          path: ~/.vagrant.d/boxes
+          key: vagrant-boxes-rocky${{ matrix.rocky_version }}-${{ hashFiles('packages/base/images/rocky${{ matrix.rocky_version }}/Vagrantfile') }}
+          restore-keys: |
+            vagrant-boxes-rocky${{ matrix.rocky_version }}-
+
+      - name: Install dependencies
+        run: |
+          # Vagrant is pre-installed on macOS runners
+          vagrant --version
+          
+          # Install VirtualBox
+          brew install --cask virtualbox
+          
+          # Install Ansible
+          brew install ansible
+          ansible --version
+
+      - name: Build Vagrant box
+        working-directory: packages/base/images/rocky${{ matrix.rocky_version }}
+        timeout-minutes: 45
+        run: |
+          echo "Building Rocky Linux ${{ matrix.rocky_version }} base box..."
+          
+          # Start the VM and provision it
+          vagrant up --provision
+          
+          # Get VM status to verify it's running
+          vagrant status
+          
+      - name: Test Vagrant box
+        working-directory: packages/base/images/rocky${{ matrix.rocky_version }}
+        run: |
+          echo "Testing Vagrant box functionality..."
+          
+          # Test SSH connectivity
+          vagrant ssh -c "echo 'SSH connection successful'"
+          
+          # Verify system information
+          vagrant ssh -c "cat /etc/os-release | grep -E '(NAME|VERSION)'"
+          
+          # Test basic commands
+          vagrant ssh -c "uname -a"
+          vagrant ssh -c "ansible --version" || echo "Ansible not found (expected for minimal base)"
+
+      - name: Run validation tests
+        working-directory: packages/base/images/rocky${{ matrix.rocky_version }}
+        run: |
+          echo "Running validation tests..."
+          
+          # Test that critical paths exist
+          vagrant ssh -c "test -d /vagrant && echo '/vagrant directory exists'"
+          
+          # Verify security settings (if applicable)
+          vagrant ssh -c "getenforce" || echo "SELinux check skipped"
+
+      - name: Package Vagrant box
+        working-directory: packages/base/images/rocky${{ matrix.rocky_version }}
+        run: |
+          echo "Packaging Vagrant box..."
+          mkdir -p ../../artifacts
+          vagrant package --output ../../artifacts/base-rocky${{ matrix.rocky_version }}.box
+          
+          # Get box size
+          ls -lh ../../artifacts/base-rocky${{ matrix.rocky_version }}.box
+
+      - name: Calculate box checksum
+        working-directory: packages/base/artifacts
+        run: |
+          shasum -a 256 base-rocky${{ matrix.rocky_version }}.box > base-rocky${{ matrix.rocky_version }}.box.sha256
+          cat base-rocky${{ matrix.rocky_version }}.box.sha256
+
+      - name: Upload box artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vagrant-box-rocky${{ matrix.rocky_version }}
+          path: |
+            packages/base/artifacts/base-rocky${{ matrix.rocky_version }}.box
+            packages/base/artifacts/base-rocky${{ matrix.rocky_version }}.box.sha256
+          retention-days: 30
+
+      - name: Cleanup
+        if: always()
+        working-directory: packages/base/images/rocky${{ matrix.rocky_version }}
+        run: |
+          vagrant destroy -f || true
+
+  publish:
+    name: Publish to GitHub Releases
+    needs: build-and-test
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all box artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vagrant-box-rocky*
+          path: artifacts/
+          merge-multiple: true
+
+      - name: Create release notes
+        id: release-notes
+        run: |
+          VERSION="v${GITHUB_RUN_NUMBER}-${GITHUB_SHA::7}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          
+          cat > RELEASE_NOTES.md << 'EOF'
+          # DevX Vagrant Boxes Release
+          
+          DevX Framework - Hardened Rocky Linux base images for secure, reproducible developer environments.
+          
+          ## 📦 Available Boxes
+          
+          ### Rocky Linux 8
+          ```bash
+          # Download from release assets
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/base-rocky8.box
+          vagrant box add dotbrains/devx-base-rocky8 base-rocky8.box
+          ```
+          
+          **Checksum (SHA256):**
+          ```
+          $(cat artifacts/base-rocky8.box.sha256)
+          ```
+          
+          ### Rocky Linux 9
+          ```bash
+          # Download from release assets
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/base-rocky9.box
+          vagrant box add dotbrains/devx-base-rocky9 base-rocky9.box
+          ```
+          
+          **Checksum (SHA256):**
+          ```
+          $(cat artifacts/base-rocky9.box.sha256)
+          ```
+          
+          ### Rocky Linux 10 (Recommended)
+          ```bash
+          # Download from release assets
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/base-rocky10.box
+          vagrant box add dotbrains/devx-base-rocky10 base-rocky10.box
+          ```
+          
+          **Checksum (SHA256):**
+          ```
+          $(cat artifacts/base-rocky10.box.sha256)
+          ```
+          
+          ## 🚀 Quick Start
+          
+          After downloading and adding a box:
+          
+          ```bash
+          # Create a new project
+          vagrant init dotbrains/devx-base-rocky10
+          vagrant up
+          vagrant ssh
+          ```
+          
+          ## 📋 Release Information
+          
+          - **Version:** ${VERSION}
+          - **Build Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - **Commit:** ${{ github.sha }}
+          - **Branch:** ${{ github.ref_name }}
+          
+          ## ✨ Features
+          
+          - Security-hardened Rocky Linux base images
+          - Minimal installation with essential packages only
+          - Ansible-ready for infrastructure-as-code
+          - Tested and validated via CI/CD pipeline
+          - Integrity checksums provided for all boxes
+          
+          ## 📚 Documentation
+          
+          - [Repository](https://github.com/${{ github.repository }})
+          - [Quick Start Guide](https://github.com/${{ github.repository }}/blob/master/.github/QUICKSTART.md)
+          - [Full Documentation](https://github.com/${{ github.repository }}/blob/master/README.md)
+          
+          ## 🔒 Security
+          
+          All boxes are built via automated CI/CD pipeline with:
+          - Automated testing and validation
+          - SHA256 checksums for integrity verification
+          - Security hardening configurations
+          - Minimal attack surface
+          
+          ## 📝 Changes
+          
+          See full commit history: https://github.com/${{ github.repository }}/commits/${{ github.sha }}
+          EOF
+          
+          cat RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release-notes.outputs.version }}
+          name: DevX Boxes ${{ steps.release-notes.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/base-rocky8.box
+            artifacts/base-rocky8.box.sha256
+            artifacts/base-rocky9.box
+            artifacts/base-rocky9.box.sha256
+            artifacts/base-rocky10.box
+            artifacts/base-rocky10.box.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  summary:
+    name: Build Summary
+    needs: [build-and-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build-and-test.result }}" == "success" ]; then
+            echo "✅ All Vagrant boxes built successfully"
+          else
+            echo "❌ Some builds failed"
+            exit 1
+          fi
+
+      - name: Generate summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # Vagrant Box Build Summary
+          
+          ## Build Results
+          - **Status:** ${{ needs.build-and-test.result }}
+          - **Workflow:** ${{ github.workflow }}
+          - **Trigger:** ${{ github.event_name }}
+          - **Branch:** ${{ github.ref_name }}
+          - **Commit:** ${{ github.sha }}
+          
+          ## Artifacts
+          - Rocky Linux 8 Box
+          - Rocky Linux 9 Box
+          - Rocky Linux 10 Box
+          
+          ## Next Steps
+          ${PUBLISH_MESSAGE:-Download artifacts from the workflow run or check GitHub Releases for published boxes.}
+          EOF

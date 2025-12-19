@@ -1,0 +1,196 @@
+---
+# Developer App Store Catalog
+# Each app is highly configurable via Ansible variables
+
+apps:
+  # Development Tools
+  vscode:
+    name: "Visual Studio Code"
+    category: "ide"
+    description: "Modern code editor"
+    role: "app-vscode"
+    configurable:
+      - extensions
+      - settings
+      - themes
+    security_level: "vetted"
+    
+  intellij:
+    name: "IntelliJ IDEA"
+    category: "ide"
+    description: "Java IDE"
+    role: "app-intellij"
+    configurable:
+      - plugins
+      - jdk_version
+      - memory_settings
+    security_level: "vetted"
+
+  vim:
+    name: "Vim"
+    category: "editor"
+    description: "Terminal text editor"
+    role: "app-vim"
+    configurable:
+      - plugins
+      - vimrc
+    security_level: "vetted"
+
+  # Language Runtimes
+  python:
+    name: "Python"
+    category: "runtime"
+    description: "Python interpreter and tools"
+    role: "app-python"
+    configurable:
+      - version
+      - pip_packages
+      - virtualenv_config
+    security_level: "vetted"
+
+  nodejs:
+    name: "Node.js"
+    category: "runtime"
+    description: "JavaScript runtime"
+    role: "app-nodejs"
+    configurable:
+      - version
+      - npm_packages
+      - global_modules
+    security_level: "vetted"
+
+  golang:
+    name: "Go"
+    category: "runtime"
+    description: "Go programming language"
+    role: "app-golang"
+    configurable:
+      - version
+      - gopath
+      - modules
+    security_level: "vetted"
+
+  rust:
+    name: "Rust"
+    category: "runtime"
+    description: "Rust programming language"
+    role: "app-rust"
+    configurable:
+      - version
+      - toolchain
+      - components
+    security_level: "vetted"
+
+  # Container Tools
+  docker:
+    name: "Docker"
+    category: "container"
+    description: "Container runtime"
+    role: "app-docker"
+    configurable:
+      - version
+      - compose
+      - buildx
+      - daemon_config
+    security_level: "vetted"
+
+  podman:
+    name: "Podman"
+    category: "container"
+    description: "Daemonless container engine"
+    role: "app-podman"
+    configurable:
+      - version
+      - rootless
+      - storage_driver
+    security_level: "vetted"
+
+  kubectl:
+    name: "kubectl"
+    category: "kubernetes"
+    description: "Kubernetes CLI"
+    role: "app-kubectl"
+    configurable:
+      - version
+      - krew_plugins
+      - context_config
+    security_level: "vetted"
+
+  # Version Control
+  git:
+    name: "Git"
+    category: "vcs"
+    description: "Version control system"
+    role: "app-git"
+    configurable:
+      - version
+      - config
+      - aliases
+    security_level: "vetted"
+
+  # Build Tools
+  maven:
+    name: "Apache Maven"
+    category: "build"
+    description: "Java build tool"
+    role: "app-maven"
+    configurable:
+      - version
+      - settings_xml
+      - repository_mirrors
+    security_level: "vetted"
+
+  gradle:
+    name: "Gradle"
+    category: "build"
+    description: "Build automation tool"
+    role: "app-gradle"
+    configurable:
+      - version
+      - init_scripts
+      - properties
+    security_level: "vetted"
+
+  # Security Tools
+  trivy:
+    name: "Trivy"
+    category: "security"
+    description: "Vulnerability scanner"
+    role: "app-trivy"
+    configurable:
+      - version
+      - scan_config
+      - database_update
+    security_level: "vetted"
+
+  vault:
+    name: "HashiCorp Vault"
+    category: "security"
+    description: "Secrets management"
+    role: "app-vault"
+    configurable:
+      - version
+      - server_config
+      - auth_methods
+    security_level: "vetted"
+
+  # Database Tools
+  postgresql-client:
+    name: "PostgreSQL Client"
+    category: "database"
+    description: "PostgreSQL command-line tools"
+    role: "app-postgresql-client"
+    configurable:
+      - version
+      - connection_defaults
+    security_level: "vetted"
+
+  mysql-client:
+    name: "MySQL Client"
+    category: "database"
+    description: "MySQL command-line tools"
+    role: "app-mysql-client"
+    configurable:
+      - version
+      - connection_defaults
+    security_level: "vetted"

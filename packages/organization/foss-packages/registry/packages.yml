@@ -1,0 +1,249 @@
+---
+# FOSS Package Registry
+# All packages have been security vetted and approved
+
+packages:
+  # Python Packages
+  - name: "requests"
+    type: "pypi"
+    version: "2.31.0"
+    license: "Apache-2.0"
+    status: "approved"
+    security_scan_date: "2024-01-15"
+    security_score: 95
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-16"
+    description: "HTTP library for Python"
+    upstream_url: "https://pypi.org/project/requests/"
+    mirror_url: "internal://pypi/requests/2.31.0"
+    dependencies:
+      - urllib3==2.0.7
+      - certifi==2023.7.22
+      - charset-normalizer==3.3.2
+
+  - name: "flask"
+    type: "pypi"
+    version: "3.0.0"
+    license: "BSD-3-Clause"
+    status: "approved"
+    security_scan_date: "2024-01-10"
+    security_score: 92
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-12"
+    description: "Lightweight WSGI web application framework"
+    upstream_url: "https://pypi.org/project/Flask/"
+    mirror_url: "internal://pypi/flask/3.0.0"
+    dependencies:
+      - Werkzeug==3.0.1
+      - Jinja2==3.1.2
+      - click==8.1.7
+
+  - name: "pytest"
+    type: "pypi"
+    version: "7.4.3"
+    license: "MIT"
+    status: "approved"
+    security_scan_date: "2024-01-08"
+    security_score: 98
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-09"
+    description: "Python testing framework"
+    upstream_url: "https://pypi.org/project/pytest/"
+    mirror_url: "internal://pypi/pytest/7.4.3"
+
+  - name: "django"
+    type: "pypi"
+    version: "5.0.1"
+    license: "BSD-3-Clause"
+    status: "approved"
+    security_scan_date: "2024-01-20"
+    security_score: 94
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-22"
+    description: "High-level Python web framework"
+    upstream_url: "https://pypi.org/project/Django/"
+    mirror_url: "internal://pypi/django/5.0.1"
+    dependencies:
+      - asgiref==3.7.2
+      - sqlparse==0.4.4
+
+  # Node.js Packages
+  - name: "express"
+    type: "npm"
+    version: "4.18.2"
+    license: "MIT"
+    status: "approved"
+    security_scan_date: "2024-01-14"
+    security_score: 96
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-15"
+    description: "Fast, unopinionated web framework for Node.js"
+    upstream_url: "https://www.npmjs.com/package/express"
+    mirror_url: "internal://npm/express/4.18.2"
+
+  - name: "lodash"
+    type: "npm"
+    version: "4.17.21"
+    license: "MIT"
+    status: "approved"
+    security_scan_date: "2024-01-05"
+    security_score: 97
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-06"
+    description: "JavaScript utility library"
+    upstream_url: "https://www.npmjs.com/package/lodash"
+    mirror_url: "internal://npm/lodash/4.17.21"
+
+  - name: "axios"
+    type: "npm"
+    version: "1.6.2"
+    license: "MIT"
+    status: "approved"
+    security_scan_date: "2024-01-18"
+    security_score: 93
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-19"
+    description: "Promise based HTTP client"
+    upstream_url: "https://www.npmjs.com/package/axios"
+    mirror_url: "internal://npm/axios/1.6.2"
+
+  - name: "react"
+    type: "npm"
+    version: "18.2.0"
+    license: "MIT"
+    status: "approved"
+    security_scan_date: "2024-01-12"
+    security_score: 95
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-13"
+    description: "JavaScript library for building user interfaces"
+    upstream_url: "https://www.npmjs.com/package/react"
+    mirror_url: "internal://npm/react/18.2.0"
+
+  # Java/Maven Packages
+  - name: "spring-boot-starter-web"
+    type: "maven"
+    version: "3.2.1"
+    group_id: "org.springframework.boot"
+    artifact_id: "spring-boot-starter-web"
+    license: "Apache-2.0"
+    status: "approved"
+    security_scan_date: "2024-01-16"
+    security_score: 91
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-17"
+    description: "Starter for building web applications with Spring Boot"
+    upstream_url: "https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web"
+    mirror_url: "internal://maven/org/springframework/boot/spring-boot-starter-web/3.2.1"
+
+  - name: "junit-jupiter"
+    type: "maven"
+    version: "5.10.1"
+    group_id: "org.junit.jupiter"
+    artifact_id: "junit-jupiter"
+    license: "EPL-2.0"
+    status: "approved"
+    security_scan_date: "2024-01-11"
+    security_score: 98
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-12"
+    description: "JUnit 5 testing framework"
+    upstream_url: "https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter"
+    mirror_url: "internal://maven/org/junit/jupiter/junit-jupiter/5.10.1"
+
+  # Container Images
+  - name: "nginx"
+    type: "container"
+    version: "1.25.3-alpine"
+    license: "BSD-2-Clause"
+    status: "approved"
+    security_scan_date: "2024-01-20"
+    security_score: 89
+    vulnerabilities:
+      - id: "CVE-2024-XXXXX"
+        severity: "low"
+        status: "accepted"
+        justification: "Not exploitable in our environment"
+    approved_by: "security-team"
+    approved_date: "2024-01-21"
+    description: "High-performance HTTP server and reverse proxy"
+    upstream_url: "https://hub.docker.com/_/nginx"
+    mirror_url: "internal://containers/nginx:1.25.3-alpine"
+
+  - name: "postgres"
+    type: "container"
+    version: "16.1-alpine"
+    license: "PostgreSQL"
+    status: "approved"
+    security_scan_date: "2024-01-19"
+    security_score: 92
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-20"
+    description: "PostgreSQL database"
+    upstream_url: "https://hub.docker.com/_/postgres"
+    mirror_url: "internal://containers/postgres:16.1-alpine"
+
+  # Generic Binaries
+  - name: "terraform"
+    type: "binary"
+    version: "1.6.6"
+    license: "MPL-2.0"
+    status: "approved"
+    security_scan_date: "2024-01-22"
+    security_score: 94
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-23"
+    description: "Infrastructure as Code tool"
+    upstream_url: "https://releases.hashicorp.com/terraform/"
+    mirror_url: "internal://binaries/terraform/1.6.6"
+    checksums:
+      sha256: "d117883fd98b960c5d0f012b0d4b21801e1c4c5e4f5e3e7e9c6f5d9e2f0e8e8e"
+
+  - name: "kubectl"
+    type: "binary"
+    version: "1.28.5"
+    license: "Apache-2.0"
+    status: "approved"
+    security_scan_date: "2024-01-17"
+    security_score: 96
+    vulnerabilities: []
+    approved_by: "security-team"
+    approved_date: "2024-01-18"
+    description: "Kubernetes command-line tool"
+    upstream_url: "https://kubernetes.io/releases/download/"
+    mirror_url: "internal://binaries/kubectl/1.28.5"
+    checksums:
+      sha256: "a118883fd98b960c5d0f012b0d4b21801e1c4c5e4f5e3e7e9c6f5d9e2f0e8e8e"
+
+# Pending Approval Queue
+pending_packages:
+  - name: "some-new-package"
+    type: "pypi"
+    version: "1.0.0"
+    submitted_by: "developer@example.com"
+    submitted_date: "2024-01-24"
+    status: "scanning"
+    scan_started: "2024-01-24T10:00:00Z"
+
+# Rejected Packages
+rejected_packages:
+  - name: "vulnerable-package"
+    type: "npm"
+    version: "2.0.0"
+    rejection_reason: "Critical security vulnerabilities"
+    rejected_by: "security-team"
+    rejected_date: "2024-01-15"
+    cve_ids:
+      - "CVE-2024-12345"

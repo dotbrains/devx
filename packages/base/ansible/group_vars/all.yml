@@ -1,0 +1,52 @@
+---
+# Base Layer Configuration
+# These are the default values that can be overridden at higher tiers
+
+# System Configuration
+base_os_version: "9"
+base_hostname_prefix: "devenv"
+base_timezone: "UTC"
+
+# Security Settings
+base_security_hardening: true
+base_selinux_state: enforcing
+base_firewall_enabled: true
+base_ssh_password_auth: false
+base_ssh_root_login: false
+
+# Airgapped Configuration
+base_airgapped_mode: false
+base_local_repo_url: ""
+
+# Package Management
+base_minimal_install: true
+base_essential_packages:
+  - vim
+  - git
+  - curl
+  - wget
+  - tar
+  - gzip
+  - sudo
+  - tmux
+
+# Network Configuration
+base_network_mode: "dhcp"
+base_dns_servers:
+  - 8.8.8.8
+  - 8.8.4.4
+
+# User Management
+base_admin_group: "wheel"
+base_default_shell: "/bin/bash"
+
+# Monitoring
+base_monitoring_enabled: true
+base_logging_level: "info"
+
+# Performance Tuning
+base_swap_size_mb: 2048
+base_kernel_params: {}
+
+# Cleanup
+base_cleanup_after_build: true

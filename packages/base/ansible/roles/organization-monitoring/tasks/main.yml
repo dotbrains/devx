@@ -1,0 +1,5 @@
+---
+# organization-monitoring tasks
+- name: Placeholder for organization-monitoring
+  ansible.builtin.debug:
+    msg: "organization-monitoring role placeholder"

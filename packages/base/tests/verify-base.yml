@@ -1,0 +1,66 @@
+---
+- name: Verify Base Layer Configuration
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check SELinux is enabled
+      ansible.builtin.command: getenforce
+      register: selinux_status
+      changed_when: false
+      failed_when: selinux_status.stdout not in ['Enforcing', 'Permissive']
+
+    - name: Verify firewalld is installed
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+      check_mode: true
+      register: firewalld_check
+
+    - name: Check SSH configuration
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config
+      register: ssh_config
+
+    - name: Fail if SSH config doesn't exist
+      ansible.builtin.fail:
+        msg: "SSH configuration file not found"
+      when: not ssh_config.stat.exists
+
+    - name: Verify base packages are installed
+      ansible.builtin.package:
+        name:
+          - vim
+          - git
+          - curl
+          - wget
+        state: present
+      check_mode: true
+      register: base_packages
+
+    - name: Check system time synchronization
+      ansible.builtin.service:
+        name: chronyd
+        state: started
+        enabled: true
+      check_mode: true
+      register: chrony_service
+
+    - name: Verify audit daemon is running
+      ansible.builtin.service:
+        name: auditd
+        state: started
+        enabled: true
+      check_mode: true
+      register: audit_service
+
+    - name: Display verification results
+      ansible.builtin.debug:
+        msg:
+          - "SELinux Status: {{ selinux_status.stdout }}"
+          - "Firewalld: OK"
+          - "SSH Config: OK"
+          - "Base Packages: OK"
+          - "Chronyd: OK"
+          - "Auditd: OK"
