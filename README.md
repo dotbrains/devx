@@ -1,5 +1,19 @@
 # DevX - Developer Environment Framework
 
+![image](./assets/og-image.svg)
+
+[![Ansible Lint](https://github.com/dotbrains/devx/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/dotbrains/devx/actions/workflows/ansible-lint.yml)
+[![Build Vagrant Boxes](https://github.com/dotbrains/devx/actions/workflows/build-vagrant-boxes.yml/badge.svg)](https://github.com/dotbrains/devx/actions/workflows/build-vagrant-boxes.yml)
+[![Deploy Documentation](https://github.com/dotbrains/devx/actions/workflows/docs.yml/badge.svg)](https://github.com/dotbrains/devx/actions/workflows/docs.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+![Ansible](https://img.shields.io/badge/-Ansible-EE0000?style=flat-square&logo=ansible&logoColor=white)
+![Vagrant](https://img.shields.io/badge/-Vagrant-1868F2?style=flat-square&logo=vagrant&logoColor=white)
+![Rocky Linux](https://img.shields.io/badge/-Rocky_Linux-10B981?style=flat-square&logo=rockylinux&logoColor=white)
+![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/-Kubernetes-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
+![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)
+
 A layered, extensible framework for building secure, customizable developer environments using Ansible and Vagrant. This monorepo structure supports progressive customization from base images through organization-level to program-specific configurations.
 
 ## Architecture Overview
@@ -58,14 +72,14 @@ graph TD
     Root --> Shared[shared/]
     Root --> Scripts[scripts/]
     Root --> Docs[docs/]
-    
+
     Packages --> Base[base/ - Tier 1: Base images & core]
     Packages --> Org[organization/ - Tier 2: Org-wide tooling]
     Packages --> Programs[programs/ - Tier 3: Program-specific configs]
-    
+
     Shared --> Ansible[ansible/ - Shared Ansible roles & modules]
     Shared --> Vagrant[vagrant/ - Vagrant utilities]
-    
+
     Scripts --> Utils[Utility scripts - vagrant-ssh, etc.]
 ```
 
@@ -225,7 +239,7 @@ Automated GitHub Actions workflow for building, testing, and publishing Vagrant 
 ### Features
 
 - ✅ **Automated Builds**: Triggered on changes to base images
-- ✅ **Parallel Testing**: All Rocky Linux versions (8, 9, 10) built simultaneously  
+- ✅ **Parallel Testing**: All Rocky Linux versions (8, 9, 10) built simultaneously
 - ✅ **GitHub Releases**: Published as release assets with SHA256 checksums
 - ✅ **Zero Setup**: No external accounts or authentication required
 - ✅ **Free Storage**: Unlimited for public repositories
