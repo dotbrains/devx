@@ -8,20 +8,22 @@ docs_dir: source
 
 theme:
   name: material
+  favicon: assets/favicon.svg
+  logo: assets/logo.svg
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: black
-      accent: grey
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
-      accent: grey
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -97,6 +99,9 @@ nav:
       - Common Issues: troubleshooting.md
       - FAQ: faq.md
   - Contributing: contributing.md
+
+extra_css:
+  - assets/extra.css
 
 extra:
   social:

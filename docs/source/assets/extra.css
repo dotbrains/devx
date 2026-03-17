@@ -1,0 +1,62 @@
+/* ── DevX brand colors (matches website) ── */
+:root {
+  --devx-teal: #14b8a6;
+  --devx-cyan: #06b6d4;
+  --devx-dark: #0f172a;
+  --devx-dark-surface: #1e293b;
+}
+
+/* ── Light mode overrides ── */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--devx-dark);
+  --md-primary-bg-color: #ffffff;
+  --md-accent-fg-color: var(--devx-teal);
+  --md-typeset-a-color: var(--devx-teal);
+}
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: var(--devx-dark);
+}
+
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: var(--devx-dark);
+}
+
+/* ── Dark mode overrides ── */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: var(--devx-dark);
+  --md-default-fg-color: #e2e8f0;
+  --md-primary-fg-color: var(--devx-dark);
+  --md-primary-bg-color: #e2e8f0;
+  --md-accent-fg-color: var(--devx-teal);
+  --md-typeset-a-color: var(--devx-teal);
+  --md-code-bg-color: var(--devx-dark-surface);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: var(--devx-dark);
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: var(--devx-dark-surface);
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: var(--devx-teal);
+}
+
+/* ── Shared ── */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.md-typeset a:hover {
+  color: var(--devx-cyan);
+}
+
+.md-search__form {
+  border-radius: 0.25rem;
+}
