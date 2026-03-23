@@ -5,7 +5,7 @@
 [![Ansible Lint](https://github.com/dotbrains/devx/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/dotbrains/devx/actions/workflows/ansible-lint.yml)
 [![Build Vagrant Boxes](https://github.com/dotbrains/devx/actions/workflows/build-vagrant-boxes.yml/badge.svg)](https://github.com/dotbrains/devx/actions/workflows/build-vagrant-boxes.yml)
 [![Deploy Documentation](https://github.com/dotbrains/devx/actions/workflows/docs.yml/badge.svg)](https://github.com/dotbrains/devx/actions/workflows/docs.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/License-PolyForm%20Shield%201.0.0-blue.svg)](https://polyformproject.org/licenses/shield/1.0.0/)
 
 ![Ansible](https://img.shields.io/badge/-Ansible-EE0000?style=flat-square&logo=ansible&logoColor=white)
 ![Vagrant](https://img.shields.io/badge/-Vagrant-1868F2?style=flat-square&logo=vagrant&logoColor=white)
@@ -277,4 +277,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
 
 ## License
 
-MIT License - See [LICENSE](./LICENSE)
+This project is licensed under the [PolyForm Shield License 1.0.0](https://polyformproject.org/licenses/shield/1.0.0/) — see [LICENSE](LICENSE) for details.
